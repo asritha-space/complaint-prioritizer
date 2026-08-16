@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nagar Sahayak — Municipal Grievance Portal</title>
+<style>
+  :root{
+    --ink:#1c2b3a;
+    --paper:#f6f3ea;
+    --paper-2:#efe9da;
+    --navy:#1a3a5c;
+    --navy-dark:#122740;
+    --seal:#8a6d3b;
+    --green:#2d6a4f;
+    --green-bg:#e6f0ea;
+    --amber:#a5650f;
+    --amber-bg:#f6ebd8;
+    --red:#9c3b2e;
+    --red-bg:#f5e6e2;
+    --line:#d8d0bd;
+    --mono: 'Courier New', ui-monospace, monospace;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:var(--sans); background:var(--paper);
+    color:var(--ink); -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:#c9a15a55;}
+
+  /* Header / letterhead */
+  .letterhead{
+    background:var(--navy); color:#f4f1e8; padding:22px 24px 18px;
+    border-bottom:6px solid var(--seal);
+  }
+  .letterhead-inner{max-width:980px; margin:0 auto; display:flex; align-items:center; gap:16px;}
+  .seal{flex:0 0 auto;}
+  .lh-text h1{
+    font-family:var(--serif); font-size:1.5rem; margin:0 0 2px; letter-spacing:.3px; font-weight:700;
+  }
+  .lh-text p{margin:0; font-size:.8rem; opacity:.85; letter-spacing:.5px; text-transform:uppercase;}
+  .lh-right{margin-left:auto; text-align:right; font-size:.72rem; opacity:.8; line-height:1.5;}
+
+  nav{background:var(--navy-dark); border-bottom:1px solid #0000002a;}
+  .nav-inner{max-width:980px; margin:0 auto; display:flex;}
+  .tab-btn{
+    background:none; border:none; color:#cdd7e2; font-family:var(--sans); font-size:.85rem;
+    padding:13px 18px; cursor:pointer; letter-spacing:.3px; border-bottom:3px solid transparent;
+    transition:.15s;
+  }
+  .tab-btn:hover{color:#fff;}
+  .tab-btn.active{color:#fff; border-bottom-color:var(--seal); background:#ffffff0d;}
+
+  main{max-width:980px; margin:0 auto; padding:28px 20px 60px;}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)}to{opacity:1; transform:translateY(0)}}
+
+  .card{
+    background:#fffdf8; border:1px solid var(--line); border-radius:3px;
+    padding:24px; margin-bottom:20px; box-shadow:0 1px 2px #0000000a;
+  }
+  .card h2{font-family:var(--serif); font-size:1.2rem; margin:0 0 4px; color:var(--navy);}
+  .card .sub{font-size:.82rem; color:#6b6353; margin-bottom:18px;}
+
+  label{display:block; font-size:.78rem; font-weight:600; text-transform:uppercase; letter-spacing:.4px; color:#54503f; margin:14px 0 5px;}
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=tel], textarea, select{
+    width:100%; padding:10px 12px; border:1px solid #c7c0a8; border-radius:2px;
+    font-family:var(--sans); font-size:.92rem; background:#fffefb; color:var(--ink);
+  }
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--navy); outline-offset:1px; border-color:var(--navy);}
+  textarea{resize:vertical; min-height:80px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media(max-width:640px){.row2{grid-template-columns:1fr;}}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; background:var(--navy); color:#fff; border:none;
+    padding:11px 20px; font-size:.88rem; font-weight:600; letter-spacing:.3px; border-radius:2px;
+    cursor:pointer; transition:.15s;
+  }
+  .btn:hover{background:var(--navy-dark);}
+  .btn.secondary{background:#fff; color:var(--navy); border:1px solid var(--navy);}
+  .btn.secondary:hover{background:var(--navy); color:#fff;}
+  .btn.green{background:var(--green);} .btn.green:hover{background:#1e4d38;}
+  .btn:disabled{opacity:.5; cursor:not-allowed;}
+  .btn-row{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
+
+  .loc-btn{font-size:.78rem; padding:7px 12px; margin-top:8px;}
+  .loc-status{font-size:.78rem; color:var(--green); margin-top:6px;}
+  .photo-preview{margin-top:10px; max-width:220px; border:1px solid var(--line); border-radius:2px; display:block;}
+  .file-drop{
+    border:1.5px dashed #b7ae8f; border-radius:3px; padding:16px; text-align:center;
+    font-size:.82rem; color:#6b6353; cursor:pointer; background:#fbf9f3;
+  }
+  .file-drop:hover{border-color:var(--navy);}
+
+  /* Voice recorder */
+  .voice-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px;}
+  .rec-btn{
+    display:inline-flex; align-items:center; gap:8px; background:#fff; border:1.5px solid var(--navy);
+    color:var(--navy); padding:9px 16px; border-radius:2px; font-size:.85rem; font-weight:600;
+    cursor:pointer; transition:.15s;
+  }
+  .rec-btn:hover{background:var(--navy); color:#fff;}
+  .rec-btn.recording{background:var(--red); border-color:var(--red); color:#fff;}
+  .rec-dot{width:10px; height:10px; border-radius:50%; background:currentColor;}
+  .rec-btn.recording .rec-dot{animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .rec-time{font-family:var(--mono); font-size:.82rem; color:#6b6353;}
+  .voice-preview{display:flex; align-items:center; gap:10px; margin-top:10px; background:var(--paper-2);
+    border:1px solid var(--line); border-radius:2px; padding:10px 12px;}
+  .voice-preview audio{height:34px; max-width:240px;}
+  .voice-clear{font-size:.76rem; color:var(--red); background:none; border:none; cursor:pointer;
+    text-decoration:underline; padding:0;}
+  .rec-hint{font-size:.76rem; color:#847d68; margin-top:6px;}
+
+  /* Confirmation stamp */
+  .stamp-wrap{text-align:center; padding:10px 0 6px;}
+  .stamp{
+    display:inline-block; border:3px solid var(--seal); color:var(--seal); border-radius:6px;
+    padding:14px 26px; transform:rotate(-3deg); font-family:var(--serif); font-weight:700;
+    letter-spacing:1px; font-size:1.05rem; margin-bottom:14px;
+  }
+  .id-box{
+    font-family:var(--mono); background:var(--navy); color:#fff; padding:12px 16px; border-radius:2px;
+    font-size:1.1rem; letter-spacing:1px; text-align:center; margin:14px 0;
+  }
+
+  /* Track panel */
+  .lookup-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .lookup-row input{flex:1; min-width:180px;}
+
+  .status-pill{
+    display:inline-block; padding:3px 11px; border-radius:20px; font-size:.72rem; font-weight:700;
+    letter-spacing:.4px; text-transform:uppercase;
+  }
+  .status-Filed{background:var(--amber-bg); color:var(--amber);}
+  .status-In-Progress{background:#e2ecf6; color:var(--navy);}
+  .status-Resolved{background:var(--green-bg); color:var(--green);}
+
+  .complaint-card{border:1px solid var(--line); border-radius:3px; padding:18px; margin-bottom:14px; background:#fffefb;}
+  .cc-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;}
+  .cc-id{font-family:var(--mono); font-size:.85rem; color:#6b6353;}
+  .cc-cat{font-weight:700; font-size:.95rem; margin:3px 0 6px;}
+  .cc-desc{font-size:.86rem; color:#3d3a30; margin:8px 0;}
+  .cc-meta{font-size:.76rem; color:#847d68; margin-top:6px;}
+  .cc-photo{max-width:140px; border-radius:2px; border:1px solid var(--line); margin-top:10px;}
+  .overdue-flag{color:var(--red); font-weight:700; font-size:.76rem; margin-top:6px;}
+
+  .timeline{list-style:none; padding:0; margin:14px 0 0; border-left:2px solid var(--line);}
+  .timeline li{padding:0 0 14px 16px; margin-left:-1px; position:relative; font-size:.83rem;}
+  .timeline li::before{content:''; position:absolute; left:-6px; top:2px; width:10px; height:10px; border-radius:50%; background:var(--navy); border:2px solid #fffefb;}
+  .timeline li.done::before{background:var(--green);}
+  .timeline .t-label{font-weight:700;}
+  .timeline .t-time{color:#847d68; font-size:.75rem;}
+
+  .notif{background:var(--green-bg); border:1px solid #b7d7c4; border-radius:2px; padding:10px 14px; margin-bottom:8px; font-size:.84rem;}
+
+  /* dashboard */
+  .dash-stats{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
+  .stat{flex:1; min-width:110px; background:#fffefb; border:1px solid var(--line); border-radius:3px; padding:14px; text-align:center;}
+  .stat .n{font-family:var(--serif); font-size:1.6rem; color:var(--navy); font-weight:700;}
+  .stat .l{font-size:.72rem; text-transform:uppercase; letter-spacing:.4px; color:#6b6353;}
+  .filter-row{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .chip{
+    padding:6px 13px; border-radius:20px; border:1px solid #c7c0a8; background:#fff; font-size:.78rem;
+    cursor:pointer;
+  }
+  .chip.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+  .dept-actions{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  .dept-actions .btn{padding:7px 13px; font-size:.78rem;}
+  .reminder-log{font-size:.74rem; color:#847d68; margin-top:8px; font-style:italic;}
+  .empty{text-align:center; padding:40px 20px; color:#847d68; font-size:.9rem;}
+
+  .note-inline{background:var(--paper-2); border-left:3px solid var(--seal); padding:10px 14px; font-size:.78rem; color:#5c5637; margin-top:16px; border-radius:0 2px 2px 0;}
+  .field-error{color:var(--red); font-size:.78rem; margin-top:4px;}
+</style>
+  <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+</head>
+<body>
+
+<header class="letterhead">
+  <div class="letterhead-inner">
+    <svg class="seal" width="52" height="52" viewBox="0 0 52 52">
+      <circle cx="26" cy="26" r="24" fill="none" stroke="#f4f1e8" stroke-width="2"/>
+      <circle cx="26" cy="26" r="19" fill="none" stroke="#f4f1e8" stroke-width="1"/>
+      <text x="26" y="32" text-anchor="middle" font-family="Georgia, serif" font-size="19" fill="#f4f1e8" font-weight="700">N</text>
+      <text x="26" y="10" text-anchor="middle" font-family="Georgia" font-size="5.5" fill="#f4f1e8" letter-spacing="1">MUNICIPAL</text>
+    </svg>
+    <div class="lh-text">
+      <h1>Nagar Sahayak</h1>
+      <p>Community Grievance &amp; Redressal Portal</p>
+    </div>
+    <div class="lh-right">Reference SLA: 3 working days<br>All complaints tracked publicly by ID</div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <button class="tab-btn active" data-tab="file">File a Complaint</button>
+    <button class="tab-btn" data-tab="track">Track / My Complaints</button>
+    <button class="tab-btn" data-tab="dept">Department Dashboard</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- FILE COMPLAINT -->
+  <section class="panel active" id="panel-file">
+    <div class="card">
+      <h2>Register a new complaint</h2>
+      <div class="sub">Fields marked are used to route your complaint to the right department and to notify you when it's resolved.</div>
+
+      <div class="row2">
+        <div>
+          <label for="f-name">Your name</label>
+          <input type="text" id="f-name" placeholder="Full name">
+        </div>
+        <div>
+          <label for="f-phone">Mobile number</label>
+          <input type="tel" id="f-phone" placeholder="10-digit mobile number">
+        </div>
+      </div>
+
+      <label for="f-cat">Category</label>
+      <select id="f-cat">
+        <option>Roads &amp; Potholes</option>
+        <option>Water Supply</option>
+        <option>Drainage &amp; Sewage</option>
+        <option>Street Lighting</option>
+        <option>Garbage &amp; Sanitation</option>
+        <option>Public Property Damage</option>
+        <option>Stray Animals</option>
+        <option>Illegal Construction</option>
+        <option>Other</option>
+      </select>
+
+      <label for="f-desc">Describe the issue</label>
+      <textarea id="f-desc" placeholder="What's wrong, since when, and any other detail that helps the department act quickly"></textarea>
+
+      <label for="f-loc">Location / address</label>
+      <input type="text" id="f-loc" placeholder="Street, landmark, ward number">
+      <button class="btn secondary loc-btn" id="btn-geo" type="button">📍 Use my current location</button>
+      <div class="loc-status" id="geo-status"></div>
+
+      <label for="f-photo">Photo of the issue (optional but recommended)</label>
+      <div class="file-drop" id="drop-zone">Tap to take or upload a photo</div>
+      <input type="file" id="f-photo" accept="image/*" capture="environment" style="display:none">
+      <img id="photo-prev" class="photo-preview" style="display:none">
+
+      <label>Voice message (optional)</label>
+      <div class="voice-row">
+        <button class="rec-btn" id="btn-record" type="button">
+          <span class="rec-dot"></span>
+          <span id="rec-label">Record</span>
+        </button>
+        <span class="rec-time" id="rec-time"></span>
+      </div>
+      <div class="rec-hint" id="rec-hint">Tap to record a short voice description of the issue (max 60 seconds).</div>
+      <div id="voice-preview-wrap" style="display:none;">
+        <div class="voice-preview">
+          <audio id="voice-play" controls></audio>
+          <button class="voice-clear" id="voice-clear" type="button">Remove</button>
+        </div>
+      </div>
+
+      <div id="file-error" class="field-error"></div>
+
+      <div class="btn-row">
+        <button class="btn" id="btn-submit">Submit complaint</button>
+      </div>
+    </div>
+
+    <div class="card" id="confirm-card" style="display:none;">
+      <div class="stamp-wrap">
+        <div class="stamp">RECEIVED</div>
+      </div>
+      <div class="sub" style="text-align:center;">Your complaint has been logged. Save this ID to track its status.</div>
+      <div class="id-box" id="new-id"></div>
+      <div class="note-inline">
+        We'll remind the concerned department automatically until this is marked resolved, and you'll see a resolution message under <strong>Track / My Complaints</strong> using your phone number.
+      </div>
+    </div>
+  </section>
+
+  <!-- TRACK -->
+  <section class="panel" id="panel-track">
+    <div class="card">
+      <h2>Track a complaint</h2>
+      <div class="sub">Look up by complaint ID, or by your mobile number to see everything you've filed.</div>
+      <div class="lookup-row">
+        <input type="text" id="t-query" placeholder="Complaint ID (e.g. MC-20260724-0001) or mobile number">
+        <button class="btn" id="btn-track">Search</button>
+      </div>
+    </div>
+    <div id="track-results"></div>
+  </section>
+
+  <!-- DEPT DASHBOARD -->
+  <section class="panel" id="panel-dept">
+    <div class="card">
+      <h2>Department Dashboard</h2>
+      <div class="sub">Open access for municipal staff — no separate login is required in this demo. Overdue complaints are flagged automatically and reminders are logged.</div>
+      <div class="dash-stats" id="dash-stats"></div>
+      <div class="filter-row" id="filter-row"></div>
+    </div>
+    <div id="dept-list"></div>
+  </section>
+
+</main>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
